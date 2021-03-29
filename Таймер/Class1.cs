@@ -22,7 +22,6 @@ namespace Таймер
         System.Windows.Forms.Timer Timer = new System.Windows.Forms.Timer();
         static Graphics Form;
         int interval;
-        int prevDelta = 0;
 
         public Clock(int _x, int _y, int _diameter, int _interval)
         {
@@ -36,28 +35,27 @@ namespace Таймер
             InitializationTimer();
         }
 
-        internal void MouseWheel(int delta)
+        public void setSeconds(int _seconds)
+        {
+            seconds = _seconds;
+        }
+
+        public void MouseWheel(int delta)
         {
             delta = (int)delta / 120;
-            int dif = Math.Abs(delta - prevDelta);
-            seconds = Math.Abs(seconds - dif) % 60;
-            prevDelta = delta;
+            seconds = Math.Abs(60 + seconds - delta) % 60;
+            Draw(Form);
         }
 
-        internal bool Inside(int pointX, int pointY)
+        public bool Inside(int pointX, int pointY)
         {
             return radius > Math.Sqrt(Math.Abs(x - pointX) * Math.Abs(x - pointX) +
-                                      Math.Abs(y - pointY) + Math.Abs(y - pointY));
+                                      Math.Abs(y - pointY) * Math.Abs(y - pointY));
         }
-
-
-        
 
         private void TimerEventProcessor(Object myObject, EventArgs myEventArgs)
         {
             seconds++;
-            //Pen ciclePen = new Pen(Color.Black, 3);
-            //Form.DrawLine(ciclePen, x, y, arrX[seconds % 12] /*+ radius - fontSize*/, arrY[seconds % 12]);
             Draw(Form);
         }
 
@@ -68,7 +66,26 @@ namespace Таймер
             Timer.Start();
         }
 
-        internal void Draw(Graphics g)
+        public void TimerStop()
+        {
+            Timer.Stop();
+            seconds = 0;
+            Draw(Form);
+        }
+
+        public int getSeconds()
+        {
+            return seconds;
+        }
+
+        public void TimerStart()
+        {
+            Timer.Start();
+            //seconds = 0;
+            Draw(Form);
+        }
+
+        public void Draw(Graphics g)
         {
             Form = g;
             g.FillEllipse(Brushes.White, PointTopLeftX, PointTopLeftY, diameter, diameter);
@@ -79,10 +96,7 @@ namespace Таймер
             g.DrawString(" 6", numberFont, Brushes.Black, x - fontSize, y + radius - (fontSize + TabFontSize));
             g.DrawString(" 9", numberFont, Brushes.Black, x - radius - (fontSize - TabFontSize), y - fontSize + 4);
 
-
-            /*int _x = x + (int)(0.5 * (radius - fontSize));
-            int _y = y + (int)(-root3 * (radius - fontSize));seconds % 12*/
-            Form.DrawLine(ciclePen, x, y, arrX[seconds % 60] /*+ radius - fontSize*/, arrY[seconds % 60]);
+            Form.DrawLine(ciclePen, x, y, arrX[seconds % 60], arrY[seconds % 60]);
         }
 
         private void SetXY(){

@@ -14,7 +14,8 @@ namespace Таймер
     public partial class Form1 : Form
     {
         Boolean flag;
-        Clock clock1, clock2, clock3;
+        Timer timer2;
+        Timer timer3;
         private void timer1_Tick(object sender, EventArgs e)
         {
             
@@ -41,28 +42,30 @@ namespace Таймер
 
         private void Form1_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (clock1.Inside(e.X, e.Y))
-            {
-                clock1.MouseWheel(e.Delta);
-                //Thread.Sleep(1000);
-                Invalidate();
-            }
+            timer2.Inside(e.X, e.Y, e);
+            timer3.Inside(e.X, e.Y, e);
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = this.CreateGraphics();
             if (flag) return;
-            clock1.Draw(g);
-            clock2.Draw(g);
+            timer2.Draw(g);
+            timer3.Draw(g);
             flag = true;
         }
 
         public Form1()
         {
             InitializeComponent();
-            clock1 = new Clock(200, 200, 200, 1000);
-            clock2 = new Clock(400, 400, 200, 60000);
+            timer2 = new Timer(200, 200, 200);
+            timer3 = new Timer(200, 500, 150);
+        }
+
+        private void Form1_MouseClick(object sender, MouseEventArgs e)
+        {
+            timer2.InsideButton(e.X, e.Y);
+            timer3.InsideButton(e.X, e.Y);
         }
     }
 }
